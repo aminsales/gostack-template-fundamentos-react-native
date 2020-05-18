@@ -40,21 +40,31 @@ const Cart: React.FC = () => {
 
   function handleIncrement(id: string): void {
     // TODO
+    increment(id);
   }
 
   function handleDecrement(id: string): void {
     // TODO
+    decrement(id);
   }
 
   const cartTotal = useMemo(() => {
     // TODO RETURN THE SUM OF THE QUANTITY OF THE PRODUCTS IN THE CART
-
-    return formatValue(0);
+    const totalItems = products.reduce(
+      (acumulator, item) => acumulator + item.quantity * item.price,
+      0,
+    );
+    return formatValue(totalItems);
   }, [products]);
 
   const totalItensInCart = useMemo(() => {
     // TODO RETURN THE SUM OF THE QUANTITY OF THE PRODUCTS IN THE CART
-
+    if (products) {
+      return products.reduce(
+        (acumulator, item) => acumulator + item.quantity,
+        0,
+      );
+    }
     return 0;
   }, [products]);
 
@@ -68,41 +78,45 @@ const Cart: React.FC = () => {
           ListFooterComponentStyle={{
             height: 80,
           }}
-          renderItem={({ item }: { item: Product }) => (
-            <Product>
-              <ProductImage source={{ uri: item.image_url }} />
-              <ProductTitleContainer>
-                <ProductTitle>{item.title}</ProductTitle>
-                <ProductPriceContainer>
-                  <ProductSinglePrice>
-                    {formatValue(item.price)}
-                  </ProductSinglePrice>
+          renderItem={({ item }: { item: Product }) => {
+            return (
+              item.quantity > 0 && (
+                <Product>
+                  <ProductImage source={{ uri: item.image_url }} />
+                  <ProductTitleContainer>
+                    <ProductTitle>{item.title}</ProductTitle>
+                    <ProductPriceContainer>
+                      <ProductSinglePrice>
+                        {formatValue(item.price)}
+                      </ProductSinglePrice>
 
-                  <TotalContainer>
-                    <ProductQuantity>{`${item.quantity}x`}</ProductQuantity>
+                      <TotalContainer>
+                        <ProductQuantity>{`${item.quantity}x`}</ProductQuantity>
 
-                    <ProductPrice>
-                      {formatValue(item.price * item.quantity)}
-                    </ProductPrice>
-                  </TotalContainer>
-                </ProductPriceContainer>
-              </ProductTitleContainer>
-              <ActionContainer>
-                <ActionButton
-                  testID={`increment-${item.id}`}
-                  onPress={() => handleIncrement(item.id)}
-                >
-                  <FeatherIcon name="plus" color="#E83F5B" size={16} />
-                </ActionButton>
-                <ActionButton
-                  testID={`decrement-${item.id}`}
-                  onPress={() => handleDecrement(item.id)}
-                >
-                  <FeatherIcon name="minus" color="#E83F5B" size={16} />
-                </ActionButton>
-              </ActionContainer>
-            </Product>
-          )}
+                        <ProductPrice>
+                          {formatValue(item.price * item.quantity)}
+                        </ProductPrice>
+                      </TotalContainer>
+                    </ProductPriceContainer>
+                  </ProductTitleContainer>
+                  <ActionContainer>
+                    <ActionButton
+                      testID={`increment-${item.id}`}
+                      onPress={() => handleIncrement(item.id)}
+                    >
+                      <FeatherIcon name="plus" color="#E83F5B" size={16} />
+                    </ActionButton>
+                    <ActionButton
+                      testID={`decrement-${item.id}`}
+                      onPress={() => handleDecrement(item.id)}
+                    >
+                      <FeatherIcon name="minus" color="#E83F5B" size={16} />
+                    </ActionButton>
+                  </ActionContainer>
+                </Product>
+              )
+            );
+          }}
         />
       </ProductContainer>
       <TotalProductsContainer>

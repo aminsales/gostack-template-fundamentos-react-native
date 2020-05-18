@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 
-import { View, Image } from 'react-native';
+import { View } from 'react-native';
 
 import formatValue from '../../utils/formatValue';
 import { useCart } from '../../hooks/cart';
@@ -36,13 +36,21 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     async function loadProducts(): Promise<void> {
       // TODO
+      const response = await api.get('/products');
+      setProducts(response.data);
     }
-
     loadProducts();
   }, []);
 
   function handleAddToCart(item: Product): void {
     // TODO
+    addToCart({
+      id: item.id,
+      title: item.title,
+      image_url: item.image_url,
+      price: item.price,
+      // quantity: 0,
+    });
   }
 
   return (
@@ -55,21 +63,23 @@ const Dashboard: React.FC = () => {
           ListFooterComponentStyle={{
             height: 80,
           }}
-          renderItem={({ item }) => (
-            <Product>
-              <ProductImage source={{ uri: item.image_url }} />
-              <ProductTitle>{item.title}</ProductTitle>
-              <PriceContainer>
-                <ProductPrice>{formatValue(item.price)}</ProductPrice>
-                <ProductButton
-                  testID={`add-to-cart-${item.id}`}
-                  onPress={() => handleAddToCart(item)}
-                >
-                  <FeatherIcon size={20} name="plus" color="#C4C4C4" />
-                </ProductButton>
-              </PriceContainer>
-            </Product>
-          )}
+          renderItem={({ item }) => {
+            return (
+              <Product>
+                <ProductImage source={{ uri: item.image_url }} />
+                <ProductTitle>{item.title}</ProductTitle>
+                <PriceContainer>
+                  <ProductPrice>{formatValue(item.price)}</ProductPrice>
+                  <ProductButton
+                    testID={`add-to-cart-${item.id}`}
+                    onPress={() => handleAddToCart(item)}
+                  >
+                    <FeatherIcon size={20} name="plus" color="#C4C4C4" />
+                  </ProductButton>
+                </PriceContainer>
+              </Product>
+            );
+          }}
         />
       </ProductContainer>
       <FloatingCart />
